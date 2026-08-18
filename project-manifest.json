@@ -1,0 +1,25 @@
+{
+  "pages": [
+    "LoginPage",
+    "SignUpPage",
+    "PermissionPage",
+    "BasicProfilePage",
+    "SkinOverviewPage",
+    "WorkProfilePage",
+    "LifestyleProfilePage",
+    "SkinDetailPage",
+    "PersonalColorDetailPage",
+    "UploadPage",
+    "AnalysisPage",
+    "AiRoutinePage",
+    "RoutinePage",
+    "ConsultStartPage",
+    "ChatPage",
+    "GamePage",
+    "ChartSelectPage",
+    "ChartHubPage",
+    "ChartDetailPage"
+  ],
+  "theme": "Figma pink only",
+  "source": "선택 차트 종류(2).docx + Figma pink frames"
+}

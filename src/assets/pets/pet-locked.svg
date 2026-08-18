@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">아직 획득하지 않은 펫</title>
+  <circle cx="120" cy="120" r="108" fill="#eee9ea"/>
+  <circle cx="78" cy="80" r="27" fill="#c8c0c2"/><circle cx="162" cy="80" r="27" fill="#c8c0c2"/>
+  <circle cx="120" cy="132" r="70" fill="#b9b1b3"/>
+  <path d="M89 153c14-14 48-14 62 0" fill="none" stroke="#9c9396" stroke-width="9" stroke-linecap="round"/>
+  <rect x="91" y="118" width="58" height="54" rx="12" fill="#fff" opacity=".96"/>
+  <path d="M105 118v-12a15 15 0 0130 0v12" fill="none" stroke="#8e8588" stroke-width="8"/>
+  <circle cx="120" cy="144" r="6" fill="#8e8588"/><path d="M120 149v10" stroke="#8e8588" stroke-width="5" stroke-linecap="round"/>
+</svg>
