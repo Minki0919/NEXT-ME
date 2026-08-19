@@ -64,15 +64,22 @@ export default function RoutineCompletePage() {
         <section className="routine-complete-summary">
           <div
             className="routine-complete-ring"
-            style={{
-              "--routine-progress": `${progress * 3.6}deg`,
-            } as React.CSSProperties}
             role="progressbar"
             aria-label="오늘의 루틴 진행도"
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={progress}
           >
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle className="routine-complete-ring-track" cx="60" cy="60" r="50" />
+              <circle
+                className="routine-complete-ring-progress"
+                cx="60"
+                cy="60"
+                r="50"
+                style={{ strokeDashoffset: `${314.159 * (1 - progress / 100)}` }}
+              />
+            </svg>
             <strong>{progress}%</strong>
           </div>
           <div>

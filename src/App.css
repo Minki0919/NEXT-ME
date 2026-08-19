@@ -2331,7 +2331,6 @@ button:disabled { cursor: not-allowed; }
   align-items: center;
 }
 .routine-complete-ring {
-  --routine-progress: 0deg;
   position: relative;
   display: grid;
   place-items: center;
@@ -2339,20 +2338,16 @@ button:disabled { cursor: not-allowed; }
   height: 136px;
   border-radius: 50%;
 }
-.routine-complete-ring::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(var(--pink) 0 var(--routine-progress), #fff var(--routine-progress) 360deg);
+.routine-complete-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.routine-complete-ring circle { fill: none; stroke-width: 10; }
+.routine-complete-ring-track { stroke: #e8e5e5; }
+.routine-complete-ring-progress {
+  stroke: var(--pink);
+  stroke-linecap: round;
+  stroke-dasharray: 314.159;
+  transition: stroke-dashoffset .25s ease;
 }
-.routine-complete-ring::after {
-  content: "";
-  position: absolute;
-  inset: 16px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #fff8f7, #fdf7f3);
-}
+.routine-complete-ring::after { content: ""; position: absolute; inset: 16px; border-radius: 50%; background: linear-gradient(145deg, #fff8f7, #fdf7f3); }
 .routine-complete-ring strong { position: relative; z-index: 1; font-size: 28px; }
 .routine-complete-summary h2 { margin: 0 0 14px; font-size: 22px; }
 .routine-complete-summary p { margin: 0; color: var(--gray); font-size: 17px; }
