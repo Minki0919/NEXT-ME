@@ -3089,6 +3089,13 @@ button:disabled { cursor: not-allowed; }
   padding: 8px 10px;
   font-size: 16px;
   line-height: 1;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.profile-edit-grid input[type="time"]::-webkit-date-and-time-value {
+  min-width: 0;
+  margin: 0;
+  text-align: left;
 }
 .profile-analysis-card { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
 .profile-analysis-card > div { display: grid; gap: 5px; }
@@ -3128,6 +3135,27 @@ button:disabled { cursor: not-allowed; }
   .profile-edit-form.profile-overview-content { padding-right: 27px; padding-left: 27px; }
   .profile-edit-form .profile-analysis-card { align-items: stretch; flex-direction: initial; }
   .profile-analysis-card .profile-analysis-action { align-items: flex-start; flex-direction: column; justify-content: center; gap: 2px; }
+}
+
+/* iPhone 14/15/16 Pro(약 393~402px)에서도 Safari 기본 time 컨트롤이
+   grid 칸보다 커지지 않도록 입력 영역을 명시적으로 축소합니다. */
+@media (max-width: 430px) {
+  .profile-edit-section .profile-edit-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .profile-edit-section .profile-edit-grid > label {
+    width: 100%;
+    min-width: 0;
+  }
+  .profile-edit-section .profile-edit-grid input[type="time"] {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: 42px;
+    padding: 7px 6px;
+    font-size: 15px;
+  }
 }
 
 /* Figma 269:59 퍼스널 컬러 확인 */
