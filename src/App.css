@@ -61,6 +61,9 @@ button:disabled { cursor: not-allowed; }
   width: min(100vw, 471px);
   min-height: 100dvh;
   margin: 0 auto;
+  /* 일부 Figma 요소가 화면 가장자리 밖으로 살짝 나가도
+     페이지 전체에 가로 스크롤이 생기지 않도록 합니다. */
+  overflow-x: hidden;
 }
 
 .persistent-next-me-logo-link {
@@ -150,9 +153,14 @@ button:disabled { cursor: not-allowed; }
   min-height: 650px;
   margin: 0 auto;
   overflow: hidden;
+  overflow-x: hidden;
   background: linear-gradient(180deg, var(--pink-bg) 0%, var(--ivory) 100%);
 }
-.pink-page-scroll { overflow-y: auto; }
+.pink-page-scroll {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
 .figma-pill-button,
 .figma-bottom-button,
 .game-start-button {
@@ -1647,6 +1655,47 @@ button:disabled { cursor: not-allowed; }
   .routine-skip { bottom: 88px; }
 }
 
+/*
+ * iPhone SE/mini 및 모바일 브라우저에서는 Figma 기준 화면 높이(850~1024px)가
+ * 실제 뷰포트보다 긴 경우가 많습니다. 기존의 overflow:hidden 때문에 아래
+ * 콘텐츠와 하단 버튼이 잘리던 문제를 모바일에서만 세로 스크롤로 전환합니다.
+ * 데스크톱의 고정형 레이아웃과 팝업 동작은 그대로 유지합니다.
+ */
+@media (max-width: 600px) {
+  .pink-page {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
+  /* 노치/홈 인디케이터가 하단 CTA를 가리지 않도록 여유를 둡니다. */
+  .figma-bottom-button,
+  .game-start-button {
+    margin-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* 고정형 카드와 이미지가 좁은 화면을 밀어내지 않도록 합니다. */
+  .pink-page img,
+  .pink-page svg,
+  .pink-page video {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 340px) {
+  .persistent-next-me-logo-link { left: 12px; }
+  .persistent-page-back { left: 14px; }
+  .persistent-app-menu-button { right: 14px; }
+
+  .figma-bottom-button {
+    left: 4%;
+    width: 92%;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 16px;
+  }
+}
+
 
 /* =========================================================
    이메일 로그인 페이지
@@ -3031,6 +3080,16 @@ button:disabled { cursor: not-allowed; }
 .profile-edit-section label { display: grid; gap: 7px; color: #6f6264; font-size: 13px; font-weight: 700; }
 .profile-edit-section input, .profile-edit-section select, .profile-edit-section textarea { box-sizing: border-box; width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid #e2d5d7; border-radius: 12px; background: #fff; color: #312a2b; font: inherit; font-weight: 500; resize: vertical; }
 .profile-edit-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.profile-edit-grid > label { min-width: 0; }
+.profile-edit-grid input[type="time"] {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: 44px;
+  padding: 8px 10px;
+  font-size: 16px;
+  line-height: 1;
+}
 .profile-analysis-card { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
 .profile-analysis-card > div { display: grid; gap: 5px; }
 .profile-analysis-card span, .profile-analysis-card small { color: #827476; font-size: 12px; }
@@ -3064,6 +3123,8 @@ button:disabled { cursor: not-allowed; }
 .profile-edit-form .profile-overview-save { width: calc(100% - 14px); min-height: 56px; margin: 1px 7px 0; background: rgba(255,118,128,.76); font-size: 18px; }
 .profile-edit-form > .api-status { margin-top: -4px; }
 @media (max-width: 390px) {
+  .profile-edit-grid { gap: 8px; }
+  .profile-edit-grid input[type="time"] { padding-right: 6px; padding-left: 6px; font-size: 15px; }
   .profile-edit-form.profile-overview-content { padding-right: 27px; padding-left: 27px; }
   .profile-edit-form .profile-analysis-card { align-items: stretch; flex-direction: initial; }
   .profile-analysis-card .profile-analysis-action { align-items: flex-start; flex-direction: column; justify-content: center; gap: 2px; }
