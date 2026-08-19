@@ -1643,22 +1643,47 @@ button:disabled { cursor: not-allowed; }
  * 데스크톱의 고정형 레이아웃과 팝업 동작은 그대로 유지합니다.
  */
 @media (max-width: 600px) {
+  html,
+  body,
+  #root,
+  .next-me-app-shell {
+    height: auto;
+    min-height: 100%;
+    overflow-y: visible;
+    overscroll-behavior-y: auto;
+  }
+
   /* 고정형 화면을 제외한 모든 페이지는 자체 높이를 늘려 문서 전체가
      한 번에 스크롤되도록 통일합니다. */
   .pink-page:not(.login-page):not(.start-page):not(.email-login-page):not(.chat-page):not(.recommendation-chat-page):not(.game-page):not(.consult-start-page) {
     height: auto;
     min-height: max(1024px, calc(100dvh + 220px + env(safe-area-inset-bottom, 0px)));
-    overflow-y: visible;
+    overflow: visible;
+    overflow-x: clip;
+    overscroll-behavior-y: auto;
+    touch-action: pan-y;
   }
 
   .pink-page {
-    overflow-y: auto;
+    overflow-x: clip;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
     /* 마지막 카드·버튼이 홈 인디케이터 아래로 숨지 않도록
        스크롤 가능한 하단 여유 공간을 확보합니다. */
     padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
     scroll-padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* 로그인·채팅·게임은 화면 안에서 동작해야 하므로 기존 고정 레이아웃을 유지합니다. */
+  .login-page,
+  .start-page,
+  .email-login-page,
+  .chat-page,
+  .recommendation-chat-page,
+  .game-page,
+  .consult-start-page {
+    height: 100dvh;
+    overflow: hidden;
+    touch-action: auto;
   }
 
   /* 절대 위치 콘텐츠만 있는 화면도 실제 스크롤 높이를 갖도록 합니다. */
