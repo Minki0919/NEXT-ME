@@ -1647,6 +1647,21 @@ button:disabled { cursor: not-allowed; }
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
+    /* 마지막 카드·버튼이 홈 인디케이터 아래로 숨지 않도록
+       스크롤 가능한 하단 여유 공간을 확보합니다. */
+    padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+    scroll-padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* 절대 위치 콘텐츠만 있는 화면도 실제 스크롤 높이를 갖도록 합니다. */
+  .pink-page::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 1px;
+    height: calc(160px + env(safe-area-inset-bottom, 0px));
+    pointer-events: none;
   }
 
   /* 설문 화면은 페이지 안에 또 스크롤 영역을 만들지 않습니다.
