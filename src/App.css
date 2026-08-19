@@ -2338,7 +2338,17 @@ button:disabled { cursor: not-allowed; }
 .routine-create-content > .api-status { margin-top: 15px; }
 
 /* Figma 260:958 루틴 완료하기 */
-.routine-complete-content { padding: 190px 32px 60px; }
+.routine-complete-content {
+  min-height: max-content;
+  padding: 190px 32px calc(220px + env(safe-area-inset-bottom, 0px));
+}
+.routine-complete-content::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: calc(80px + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+}
 .routine-complete-summary {
   display: grid;
   grid-template-columns: 138px minmax(0, 1fr);
