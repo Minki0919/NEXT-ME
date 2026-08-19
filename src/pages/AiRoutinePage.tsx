@@ -142,7 +142,7 @@ export default function AiRoutinePage() {
         <button
           className="figma-pill-button routine-continue"
           disabled={loading}
-          onClick={() => (hasRoutine ? navigate("/routine") : void createRoutine())}
+          onClick={() => (hasRoutine ? navigate("/routine") : navigate("/routine/create"))}
         >
           {loading
             ? "불러오는 중..."

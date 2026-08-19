@@ -17,20 +17,20 @@ export default function WorkProfilePage() {
   const survey = readSurvey();
   const [workDays, setWorkDays] = useState<string[]>(Array.isArray(survey.workDay) ? (survey.workDay as string[]) : []);
   const [workStyle, setWorkStyle] = useState(String(survey.workStyle ?? ""));
-  const [comeTime, setComeTime] = useState(String(survey.comeTime ?? survey.startTime ?? ""));
-  const [leaveTime, setLeaveTime] = useState(String(survey.leaveTime ?? survey.endTime ?? ""));
+  const [comeTime, setComeTime] = useState(() => normalizeTimeInput(survey.comeTime ?? survey.startTime));
+  const [leaveTime, setLeaveTime] = useState(() => normalizeTimeInput(survey.leaveTime ?? survey.endTime));
 
   const workDayQuestion = templateQuestionText(template, "workDay", "주로 일을 하는 요일은 어떻게 되시나요?");
   const workDayOptions = templateOptions(template, "workDay", days);
   const comeTimeQuestion = templateQuestionText(
     template,
     "comeTime",
-    "24시간 기준 주된 출가 시간을 입력해주세요."
+    "24시간 기준 주된 출근 시간을 입력해주세요."
   );
   const leaveTimeQuestion = templateQuestionText(
     template,
     "leaveTime",
-    "24시간 기준 주된 귀가 시간을 입력해주세요."
+    "24시간 기준 주된 퇴근 시간을 입력해주세요."
   );
   const workStyleQuestion = templateQuestionText(template, "workStyle", "근무 스타일을 선택해 주세요");
   const workStyleOptions = templateOptions(template, "workStyle", workStyles);
@@ -78,4 +78,20 @@ export default function WorkProfilePage() {
       <BottomNext onClick={next} disabled={!ready} missingItems={missingItems} />
     </PinkPage>
   );
+}
+
+function normalizeTimeInput(value: unknown) {
+  if (typeof value !== "string" || !value.trim()) return "00:00";
+  const normalized = value.trim();
+  const match = normalized.match(/^(오전|오후)\s*(\d{1,2}):?(\d{2})?$/);
+  if (match) {
+    let hour = Number(match[2]);
+    const minute = Number(match[3] ?? "00");
+    if (match[1] === "오후" && hour < 12) hour += 12;
+    if (match[1] === "오전" && hour === 12) hour = 0;
+    return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+  }
+  const plain = normalized.match(/^(\d{1,2}):?(\d{2})$/);
+  if (plain) return `${String(Number(plain[1])).padStart(2, "0")}:${plain[2]}`;
+  return "00:00";
 }

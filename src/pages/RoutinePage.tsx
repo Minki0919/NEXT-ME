@@ -350,7 +350,7 @@ export default function RoutinePage() {
       <button
         className="figma-bottom-button"
         disabled={loading}
-        onClick={() => routine?.routineGenerated ? navigate("/home") : void createRoutine()}
+        onClick={() => routine?.routineGenerated ? navigate("/home") : navigate("/routine/create")}
       >
         {loading ? "불러오는 중..." : routine?.routineGenerated ? "완료하기" : "루틴 만들기"}
       </button>

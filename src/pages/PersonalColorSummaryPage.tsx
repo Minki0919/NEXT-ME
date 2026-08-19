@@ -30,7 +30,7 @@ export default function PersonalColorSummaryPage() {
       <section className="personal-color-summary-card">
         <p>나의 퍼스널 컬러</p>
         <h2>{color}</h2>
-        <div className="personal-color-confidence" style={{ "--confidence": `${confidence * 3.6}deg` } as React.CSSProperties}><strong>{confidence}%</strong></div>
+        <div className="personal-color-confidence" style={{ "--confidence": `${confidence * 3.6}deg` } as React.CSSProperties}><span className="personal-color-confidence-label">AI 사진 신뢰도</span><strong>{confidence}%</strong></div>
         <span>프로필에 저장된 분석 결과예요</span>
         {error && <p className="api-status error">{error}</p>}
       </section>

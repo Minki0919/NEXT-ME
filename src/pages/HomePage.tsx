@@ -12,8 +12,8 @@ import dashboardCalendar from "../assets/figma/dashboard-calendar.svg";
 const QUICK_LINKS = [
   { label: "피부 분석", icon: dashboardLeaf, path: "/upload", target: "skinType" as const },
   { label: "퍼스널 컬러", icon: dashboardPalette, path: "/personal-color" },
-  { label: "루틴 캘린더", icon: dashboardCalendar, path: "/routine/history" },
-  { label: "내 기록", icon: dashboardChart, path: "/charts" },
+  { label: "루틴 캘린더", icon: dashboardCalendar, path: "/routine/complete" },
+  { label: "내 기록", icon: dashboardChart, path: "/routine/history" },
 ];
 
 export default function HomePage() {
@@ -27,7 +27,10 @@ export default function HomePage() {
     let cancelled = false;
     void getTodayRoutine()
       .then((result) => {
-        if (!cancelled) setRoutine(result);
+        if (!cancelled) {
+          setRoutine(result);
+          if (!result.routineGenerated) navigate("/routine/create", { replace: true });
+        }
       })
       .catch((value) => {
         if (!cancelled) setError(value instanceof Error ? value.message : "오늘의 루틴을 불러오지 못했습니다.");

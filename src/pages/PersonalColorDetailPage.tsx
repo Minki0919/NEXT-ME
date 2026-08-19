@@ -151,7 +151,7 @@ export default function PersonalColorDetailPage() {
       saveProfile(saved);
       const finalProfile = await getMyProfile();
       saveProfile(finalProfile);
-      navigate("/home", { replace: true });
+      navigate("/routine/settings", { replace: true });
     } catch (value) {
       setError(value instanceof ApiError || value instanceof Error ? value.message : "퍼스널컬러 분석 또는 프로필 저장에 실패했습니다.");
     } finally {

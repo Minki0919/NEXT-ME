@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import StartPage from "./pages/StartPage";
@@ -53,9 +53,23 @@ export default function App() {
   const loggedIn = hasValidAuthSession();
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [assistantStarted, setAssistantStarted] = useState(false);
-  const assistantAvailable = loggedIn && !["/chat", "/consult"].includes(location.pathname);
+  const onboardingPaths = [
+    "/profile/basic", "/profile/work", "/profile/lifestyle", "/profile/skin-overview",
+    "/profile/skin-detail", "/profile/personal-color", "/upload", "/analysis", "/ai-routine",
+    "/routine/settings", "/routine/create",
+  ];
+  const profileCompleted = getStoredProfile()?.profileCompleted === true;
+  const publicPaths = ["/", "/login", "/email-login", "/signup"];
+  const assistantAvailable = loggedIn && profileCompleted && !publicPaths.includes(location.pathname) && !["/chat", "/consult"].includes(location.pathname) && !onboardingPaths.includes(location.pathname);
   const nickname = getStoredProfile()?.nickname || getAuthSession()?.name || "사용자";
-  const showPersistentLogo = location.pathname !== "/" && location.pathname !== "/signup" && location.pathname !== "/profile";
+
+  useEffect(() => {
+    if (!assistantAvailable) {
+      setAssistantOpen(false);
+      setAssistantStarted(false);
+    }
+  }, [assistantAvailable]);
+  const showPersistentLogo = !publicPaths.includes(location.pathname) && location.pathname !== "/profile";
   const usesPageBackButton = [
     "/email-login",
     "/upload",
@@ -65,7 +79,7 @@ export default function App() {
     "/chat",
   ].includes(location.pathname);
   const showBackButton =
-    location.pathname !== "/" &&
+    !publicPaths.includes(location.pathname) &&
     !usesPageBackButton;
   const usesPageMenuButton = [
     "/consult",
@@ -79,7 +93,7 @@ export default function App() {
     "/profile",
   ].includes(location.pathname) || location.pathname.startsWith("/personal-color/");
   const showPersistentMenu =
-    loggedIn && location.pathname !== "/" && !usesPageMenuButton;
+    loggedIn && !publicPaths.includes(location.pathname) && !usesPageMenuButton;
   const pageBackClassName = location.pathname === "/routine/adjust"
     ? "persistent-page-back persistent-page-back--routine-adjust"
     : "persistent-page-back";

@@ -878,7 +878,7 @@ button:disabled { cursor: not-allowed; }
 }
 .routine-dot {
   flex: 0 0 auto; width: 22px; height: 22px; border: 3px solid #fff; border-radius: 50%;
-  background: #fff; box-shadow: 0 1px 4px #999;
+  background: #c9c9c9; box-shadow: 0 1px 4px #999;
 }
 .routine-dot.checked { background: var(--pink); }
 .tomorrow-card {
@@ -1625,6 +1625,28 @@ button:disabled { cursor: not-allowed; }
   .analysis-metric.sebum { top: 55%; }
 }
 
+/* iPhone SE 등 짧은 화면: 로그인 로고와 두 CTA를 분리합니다. */
+@media (max-width: 390px) and (max-height: 750px) {
+  .login-logo { top: 11%; width: 140px; height: 172px; }
+  .login-actions { top: 55%; gap: 14px; }
+  .login-actions .figma-pill-button { height: 54px; font-size: 18px; }
+}
+
+/* 좁은 휴대폰과 짧은 화면에서 하단 안내·버튼이 서로 겹치지 않도록 합니다. */
+@media (max-width: 360px) {
+  .figma-bottom-button { left: 5%; width: 90%; padding: 0 12px; font-size: 17px; }
+  .bottom-action-missing { left: 5%; width: 90%; }
+  .global-ai-button { right: 14px; width: 72px; height: 72px; }
+  .global-ai-logo-outer { width: 72px; height: 72px; }
+  .global-ai-logo-inner { top: 5.8px; left: 5.8px; width: 60px; height: 60px; }
+  .global-ai-logo-symbol { top: 17.6px; left: 15.3px; width: 41.3px; height: 37.3px; }
+}
+@media (max-height: 700px) {
+  .figma-bottom-button { bottom: 18px; }
+  .bottom-action-missing { bottom: 82px; }
+  .routine-skip { bottom: 88px; }
+}
+
 
 /* =========================================================
    이메일 로그인 페이지
@@ -1889,7 +1911,8 @@ button:disabled { cursor: not-allowed; }
   top: 53px;
   overflow: hidden;
   color: var(--pink-strong);
-  font-size: 13px;
+  font-size: 18px;
+  font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -1978,7 +2001,7 @@ button:disabled { cursor: not-allowed; }
   .detail-survey-scroll { padding-bottom: 105px; }
   .survey-dropdown-question { min-height: 102px; }
   .survey-dropdown-title { top: 16px; font-size: 18px; }
-  .survey-dropdown-value { top: 47px; }
+  .survey-dropdown-value { top: 47px; font-size: 17px; }
   .chat-end-button { bottom: 54px; }
 }
 
@@ -2300,7 +2323,7 @@ button:disabled { cursor: not-allowed; }
   height: 20px;
   border: 2px solid #fff;
   border-radius: 50%;
-  background: var(--pink);
+  background: #c9c9c9;
   box-shadow: 0 2px 3px #aaa;
 }
 .routine-complete-list > button.completed > span { background: var(--pink-strong); box-shadow: 0 0 0 4px rgba(255,154,154,.22); }
@@ -2941,6 +2964,8 @@ button:disabled { cursor: not-allowed; }
 .personal-color-confidence strong { grid-area: 1 / 1; z-index: 1; font-size: 25px; }
 .home-progress-section h2 { margin: 0; font-size: 20px; }
 .home-progress-section p { margin: 14px 0 0; color: var(--gray); font-size: 16px; }
+.personal-color-confidence-label { grid-area: 1 / 1; z-index: 1; align-self: start; margin-top: 27%; color: var(--gray); font-size: 12px; }
+.personal-color-confidence strong { margin-top: 28px; }
 .home-next-routine > h2 { margin: 28px 0 13px; font-size: 22px; }
 .home-next-routine > button {
   display: grid;
