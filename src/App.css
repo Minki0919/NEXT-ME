@@ -1649,10 +1649,41 @@ button:disabled { cursor: not-allowed; }
     overscroll-behavior-y: contain;
   }
 
+  /* 설문 화면은 페이지 안에 또 스크롤 영역을 만들지 않습니다.
+     콘텐츠 높이만큼 페이지가 늘어나고, 사용자는 화면 전체를 한 번만
+     스크롤하도록 합니다. */
+  .pink-page .survey-scroll {
+    bottom: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
   /* 노치/홈 인디케이터가 하단 CTA를 가리지 않도록 여유를 둡니다. */
   .figma-bottom-button,
   .game-start-button {
     margin-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* 화면 폭에 따라 CTA가 항상 좌우 같은 여백을 갖도록 계산합니다. */
+  .figma-bottom-button,
+  .bottom-action-missing {
+    left: max(16px, calc((100% - 84%) / 2));
+    width: min(84%, calc(100% - 32px));
+  }
+
+  /* 하단 CTA와 떠 있는 AI 버튼이 겹치지 않도록 AI 버튼을 한 단계 위로
+     올리고, 기기 안전 영역을 포함해 위치를 계산합니다. */
+  .global-ai-button {
+    right: max(14px, calc((100vw - min(100vw, 471px)) / 2 + 14px));
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .routine-skip {
+    bottom: calc(116px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .today-routine-page > .figma-bottom-button {
+    bottom: calc(53px + env(safe-area-inset-bottom, 0px));
   }
 
   /* 고정형 카드와 이미지가 좁은 화면을 밀어내지 않도록 합니다. */
