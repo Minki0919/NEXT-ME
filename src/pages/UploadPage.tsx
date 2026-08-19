@@ -11,6 +11,7 @@ import {
 import { ApiError } from "../api/http";
 import {
   saveAnalysisTarget,
+  getStoredAnalysisTarget,
   savePersonalColorAnalysis,
   saveProfile,
   saveSkinAnalysis,
@@ -25,7 +26,7 @@ export default function UploadPage() {
   const cameraRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const [target, setTarget] = useState<UploadTarget>("personalColor");
+  const [target, setTarget] = useState<UploadTarget>(() => getStoredAnalysisTarget());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -97,7 +98,7 @@ export default function UploadPage() {
 
   return (
     <PinkPage className="upload-page">
-      <button className="exit-link" onClick={() => navigate("/profile/personal-color")}>
+      <button className="exit-link" onClick={() => navigate("/home", { replace: true })}>
         <img src={assets.uploadBack} alt="" />
         나가기
       </button>

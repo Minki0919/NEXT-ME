@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import StartPage from "./pages/StartPage";
@@ -53,6 +53,9 @@ export default function App() {
   const loggedIn = hasValidAuthSession();
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [assistantStarted, setAssistantStarted] = useState(false);
+  const [assistantButtonPosition, setAssistantButtonPosition] = useState<{ x: number; y: number } | null>(() => readAssistantButtonPosition());
+  const assistantDrag = useRef<{ pointerId: number; startX: number; startY: number; offsetX: number; offsetY: number; moved: boolean } | null>(null);
+  const assistantButtonWasDragged = useRef(false);
   const onboardingPaths = [
     "/profile/basic", "/profile/work", "/profile/lifestyle", "/profile/skin-overview",
     "/profile/skin-detail", "/profile/personal-color", "/upload", "/analysis", "/ai-routine",
@@ -69,36 +72,44 @@ export default function App() {
       setAssistantStarted(false);
     }
   }, [assistantAvailable]);
-  const showPersistentLogo = !publicPaths.includes(location.pathname) && location.pathname !== "/profile";
-  const usesPageBackButton = [
-    "/email-login",
-    "/upload",
-    "/analysis",
-    "/ai-routine",
-    "/routine",
-    "/chat",
-  ].includes(location.pathname);
+  useEffect(() => {
+    const keepAssistantButtonOnScreen = () => {
+      setAssistantButtonPosition((current) => {
+        if (!current) return current;
+        const button = document.querySelector<HTMLButtonElement>(".global-ai-button");
+        const next = clampAssistantButtonPosition(current.x, current.y, button);
+        localStorage.setItem("nextme.assistantButtonPosition", JSON.stringify(next));
+        return next;
+      });
+    };
+    window.addEventListener("resize", keepAssistantButtonOnScreen);
+    window.addEventListener("orientationchange", keepAssistantButtonOnScreen);
+    window.visualViewport?.addEventListener("resize", keepAssistantButtonOnScreen);
+    window.visualViewport?.addEventListener("scroll", keepAssistantButtonOnScreen);
+    keepAssistantButtonOnScreen();
+    return () => {
+      window.removeEventListener("resize", keepAssistantButtonOnScreen);
+      window.removeEventListener("orientationchange", keepAssistantButtonOnScreen);
+      window.visualViewport?.removeEventListener("resize", keepAssistantButtonOnScreen);
+      window.visualViewport?.removeEventListener("scroll", keepAssistantButtonOnScreen);
+    };
+  }, []);
+  const showPersistentLogo = !publicPaths.includes(location.pathname);
   const showBackButton =
     !publicPaths.includes(location.pathname) &&
-    !usesPageBackButton;
-  const usesPageMenuButton = [
-    "/consult",
-    "/chat",
-    "/game",
-    "/routine",
-    "/routine/settings",
-    "/routine/create",
-    "/routine/adjust",
-    "/user-care",
-    "/profile",
-  ].includes(location.pathname) || location.pathname.startsWith("/personal-color/");
+    location.pathname !== "/home";
   const showPersistentMenu =
-    loggedIn && !publicPaths.includes(location.pathname) && !usesPageMenuButton;
+    loggedIn && !publicPaths.includes(location.pathname);
+  const pageTitle = getPageTitle(location.pathname);
   const pageBackClassName = location.pathname === "/routine/adjust"
     ? "persistent-page-back persistent-page-back--routine-adjust"
     : "persistent-page-back";
 
   function goBack() {
+    if (location.pathname === "/upload") {
+      navigate("/home", { replace: true });
+      return;
+    }
     if (location.key !== "default") {
       navigate(-1);
       return;
@@ -106,8 +117,51 @@ export default function App() {
     navigate(loggedIn ? "/home" : "/", { replace: true });
   }
 
+  function moveAssistantButton(clientX: number, clientY: number, offsetX: number, offsetY: number, button: HTMLButtonElement) {
+    return clampAssistantButtonPosition(clientX - offsetX, clientY - offsetY, button);
+  }
+
+  function startAssistantDrag(event: React.PointerEvent<HTMLButtonElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    assistantDrag.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
+      moved: false,
+    };
+    assistantButtonWasDragged.current = false;
+  }
+
+  function dragAssistantButton(event: React.PointerEvent<HTMLButtonElement>) {
+    const drag = assistantDrag.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const next = moveAssistantButton(event.clientX, event.clientY, drag.offsetX, drag.offsetY, event.currentTarget);
+    if (!drag.moved) drag.moved = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 4;
+    if (drag.moved) {
+      assistantButtonWasDragged.current = true;
+      setAssistantButtonPosition(next);
+    }
+  }
+
+  function finishAssistantDrag(event: React.PointerEvent<HTMLButtonElement>) {
+    const drag = assistantDrag.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    assistantDrag.current = null;
+    if (assistantButtonWasDragged.current) {
+      const finalPosition = moveAssistantButton(event.clientX, event.clientY, drag.offsetX, drag.offsetY, event.currentTarget);
+      setAssistantButtonPosition(finalPosition);
+      localStorage.setItem("nextme.assistantButtonPosition", JSON.stringify(finalPosition));
+    }
+  }
+
   return (
-    <div className="next-me-app-shell">
+    <div className={`next-me-app-shell ${pageTitle && !publicPaths.includes(location.pathname) ? "has-mobile-chrome" : ""}`}>
       {/*
         NEXT : ME 고정 아이콘
         - Routes 바깥에 두어 페이지가 바뀌어도 항상 유지됩니다.
@@ -150,10 +204,31 @@ export default function App() {
         </button>
       )}
 
+      {pageTitle && !publicPaths.includes(location.pathname) && (
+        <h1 className="persistent-mobile-page-title">{pageTitle}</h1>
+      )}
+
       {loggedIn && <AppMenu />}
 
       {assistantAvailable && !assistantOpen && (
-        <button type="button" className="global-ai-button" onClick={() => { setAssistantStarted(true); setAssistantOpen(true); }} aria-label="AI 기본 대화 열기">
+        <button
+          type="button"
+          className="global-ai-button"
+          style={assistantButtonPosition ? { left: assistantButtonPosition.x, top: assistantButtonPosition.y, right: "auto", bottom: "auto" } : undefined}
+          onPointerDown={startAssistantDrag}
+          onPointerMove={dragAssistantButton}
+          onPointerUp={finishAssistantDrag}
+          onPointerCancel={finishAssistantDrag}
+          onClick={() => {
+            if (assistantButtonWasDragged.current) {
+              assistantButtonWasDragged.current = false;
+              return;
+            }
+            setAssistantStarted(true);
+            setAssistantOpen(true);
+          }}
+          aria-label="AI 기본 대화 열기 또는 드래그하여 위치 이동"
+        >
           <img className="global-ai-logo-outer" src={aiPopupOuter} alt="" />
           <img className="global-ai-logo-inner" src={aiPopupInner} alt="" />
           <span className="global-ai-logo-symbol" aria-hidden="true"><img src={aiPopupSymbol} alt="" /></span>
@@ -215,4 +290,71 @@ export default function App() {
       </Routes>
     </div>
   );
+}
+
+function getPageTitle(pathname: string) {
+  const titles: Record<string, string> = {
+    "/permissions": "접근 권한 안내",
+    "/profile/basic": "맞춤 프로필 작성",
+    "/profile/work": "맞춤 프로필 작성",
+    "/profile/lifestyle": "맞춤 프로필 작성",
+    "/profile/skin-overview": "스킨 타입 진단",
+    "/profile/skin-detail": "스킨 타입 진단",
+    "/profile/personal-color": "퍼스널 컬러 진단",
+    "/upload": "사진 업로드",
+    "/analysis": "AI 분석 결과",
+    "/ai-routine": "AI 맞춤 루틴",
+    "/routine": "오늘의 루틴",
+    "/routine/settings": "루틴 설정",
+    "/routine/create": "루틴 만들기",
+    "/routine/complete": "루틴 완료하기",
+    "/routine/adjust": "루틴 수정하기",
+    "/routine/history": "루틴 완료 조회",
+    "/consult": "AI 맞춤 상담",
+    "/chat": "AI 맞춤 상담",
+    "/game": "캐릭터",
+    "/home": "메인",
+    "/profile": "프로필 확인·수정",
+    "/personal-color": "퍼스널 컬러 확인",
+    "/characters": "캐릭터 수집 현황",
+    "/pets": "캐릭터 도감",
+    "/user-care": "피부 관리 가이드",
+    "/personal-color/outfit": "옷 추천 받기",
+    "/personal-color/makeup": "화장 추천 받기",
+    "/personal-color/history": "추천 이력 보기",
+    "/charts/select": "루틴 설정",
+    "/charts": "루틴 차트",
+  };
+  if (pathname.startsWith("/charts/")) return "루틴 차트 상세";
+  return titles[pathname] ?? "";
+}
+
+function readAssistantButtonPosition() {
+  try {
+    const value = JSON.parse(localStorage.getItem("nextme.assistantButtonPosition") || "null") as { x?: unknown; y?: unknown } | null;
+    if (value && typeof value.x === "number" && typeof value.y === "number") {
+      return { x: value.x, y: value.y };
+    }
+  } catch {
+    // 저장된 위치가 손상된 경우 기본 CSS 위치를 사용합니다.
+  }
+  return null;
+}
+
+function clampAssistantButtonPosition(x: number, y: number, button?: HTMLButtonElement | null) {
+  const viewport = window.visualViewport;
+  const viewportWidth = viewport?.width ?? document.documentElement.clientWidth ?? window.innerWidth;
+  const viewportHeight = viewport?.height ?? document.documentElement.clientHeight ?? window.innerHeight;
+  const rect = button?.getBoundingClientRect();
+  const buttonWidth = rect?.width || (window.innerWidth <= 360 ? 62 : 70);
+  const buttonHeight = rect?.height || (window.innerWidth <= 360 ? 62 : 70);
+  const edge = 12;
+  const hasFixedHeader = document.querySelector(".next-me-app-shell")?.classList.contains("has-mobile-chrome") && window.innerWidth <= 600;
+  const minY = hasFixedHeader ? 120 : edge;
+  const maxX = Math.max(edge, viewportWidth - buttonWidth - edge);
+  const maxY = Math.max(minY, viewportHeight - buttonHeight - edge);
+  return {
+    x: Math.min(maxX, Math.max(edge, x)),
+    y: Math.min(maxY, Math.max(minY, y)),
+  };
 }

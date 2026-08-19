@@ -120,6 +120,7 @@ button:disabled { cursor: not-allowed; }
   height: 32px;
   object-fit: contain;
 }
+.persistent-mobile-page-title { display: none; }
 
 /*
   기존 일부 페이지에는 같은 NEXT : ME 로고가 따로 들어가 있었기 때문에
@@ -1582,23 +1583,27 @@ button:disabled { cursor: not-allowed; }
 .profile-assistant-input img { width: 100%; height: 100%; object-fit: contain; }
 .profile-assistant-reopen { position: absolute; right: 28px; bottom: 126px; z-index: 60; min-width: 76px; height: 38px; border: 0; border-radius: 999px; background: #fff; color: var(--pink-strong); font-size: 13px; font-weight: 800; box-shadow: 2px 5px 14px rgba(162,70,70,.14); }
 .global-ai-button {
+  --ai-button-size: 70px;
   position: fixed;
   right: max(20px, calc((100vw - 471px) / 2 + 20px));
   bottom: max(24px, env(safe-area-inset-bottom));
   z-index: 1100;
-  width: 84px;
-  height: 84px;
+  width: var(--ai-button-size);
+  height: var(--ai-button-size);
   padding: 0;
   overflow: hidden;
   border: 0;
   border-radius: 50%;
   background: transparent;
   box-shadow: 0 9px 24px rgba(160,30,30,.28);
+  touch-action: none;
+  cursor: grab;
 }
+.global-ai-button:active { cursor: grabbing; }
 .global-ai-logo-outer, .global-ai-logo-inner, .global-ai-logo-symbol { position: absolute; display: block; pointer-events: none; }
-.global-ai-logo-outer { inset: 0; width: 84px; height: 84px; }
-.global-ai-logo-inner { top: 6.8px; left: 6.8px; width: 70px; height: 70px; }
-.global-ai-logo-symbol { top: 20.5px; left: 17.9px; width: 48.2px; height: 43.5px; overflow: hidden; }
+.global-ai-logo-outer { inset: 0; width: 100%; height: 100%; }
+.global-ai-logo-inner { top: 8.1%; left: 8.1%; width: 83.3%; height: 83.3%; }
+.global-ai-logo-symbol { top: 24.4%; left: 21.3%; width: 57.4%; height: 51.8%; overflow: hidden; }
 .global-ai-logo-symbol img { position: absolute; top: -.2px; left: 0; width: 100%; height: 136.21%; object-fit: fill; }
 .global-ai-button:hover { transform: translateY(-2px); }
 .global-ai-button:focus-visible { outline: 3px solid rgba(255,118,128,.35); outline-offset: 4px; }
@@ -1625,10 +1630,7 @@ button:disabled { cursor: not-allowed; }
 @media (max-width: 360px) {
   .figma-bottom-button { left: 5%; width: 90%; padding: 0 12px; font-size: 17px; }
   .bottom-action-missing { left: 5%; width: 90%; }
-  .global-ai-button { right: 14px; width: 72px; height: 72px; }
-  .global-ai-logo-outer { width: 72px; height: 72px; }
-  .global-ai-logo-inner { top: 5.8px; left: 5.8px; width: 60px; height: 60px; }
-  .global-ai-logo-symbol { top: 17.6px; left: 15.3px; width: 41.3px; height: 37.3px; }
+  .global-ai-button { --ai-button-size: 62px; right: 14px; }
 }
 @media (max-height: 700px) {
   .figma-bottom-button { bottom: 18px; }
@@ -1653,25 +1655,25 @@ button:disabled { cursor: not-allowed; }
     overscroll-behavior-y: auto;
   }
 
-  /* 고정형 화면을 제외한 모든 페이지는 자체 높이를 늘려 문서 전체가
-     한 번에 스크롤되도록 통일합니다. */
+  /* 일반 페이지는 실제 콘텐츠 높이로 늘어나며 문서 전체가 스크롤됩니다. */
   .pink-page:not(.login-page):not(.start-page):not(.email-login-page):not(.chat-page):not(.recommendation-chat-page):not(.game-page):not(.consult-start-page) {
     height: auto;
-    min-height: max(1024px, calc(100dvh + 220px + env(safe-area-inset-bottom, 0px)));
+    min-height: 100dvh;
     overflow: visible;
     overflow-x: clip;
     overscroll-behavior-y: auto;
     touch-action: pan-y;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   }
 
   .pink-page {
     overflow-x: clip;
     -webkit-overflow-scrolling: touch;
-    /* 마지막 카드·버튼이 홈 인디케이터 아래로 숨지 않도록
-       스크롤 가능한 하단 여유 공간을 확보합니다. */
-    padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
-    scroll-padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+    scroll-padding-top: calc(116px + env(safe-area-inset-top, 0px));
+    scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   }
+
+  .figma-feature-page { min-height: 100dvh; }
 
   /* 로그인·채팅·게임은 화면 안에서 동작해야 하므로 기존 고정 레이아웃을 유지합니다. */
   .login-page,
@@ -1686,25 +1688,104 @@ button:disabled { cursor: not-allowed; }
     touch-action: auto;
   }
 
-  /* 절대 위치 콘텐츠만 있는 화면도 실제 스크롤 높이를 갖도록 합니다. */
-  .pink-page::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 1px;
-    height: calc(160px + env(safe-area-inset-bottom, 0px));
-    pointer-events: none;
-  }
-
   /* 설문 화면은 페이지 안에 또 스크롤 영역을 만들지 않습니다.
      콘텐츠 높이만큼 페이지가 늘어나고, 사용자는 화면 전체를 한 번만
      스크롤하도록 합니다. */
   .pink-page .survey-scroll {
+    position: relative;
+    top: auto;
+    right: auto;
     bottom: auto;
+    left: auto;
     max-height: none;
+    padding-top: calc(150px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(170px + env(safe-area-inset-bottom, 0px));
     overflow: visible;
   }
+
+  /* 전역 모바일 고정 헤더 */
+  .persistent-next-me-logo-link,
+  .persistent-page-back,
+  .persistent-app-menu-button,
+  .persistent-mobile-page-title {
+    position: fixed;
+  }
+  .persistent-next-me-logo-link {
+    top: calc(8px + env(safe-area-inset-top, 0px));
+    left: max(18px, calc((100vw - min(100vw, 471px)) / 2 + 18px));
+    z-index: 2003;
+  }
+  .persistent-page-back {
+    top: calc(57px + env(safe-area-inset-top, 0px));
+    left: max(18px, calc((100vw - min(100vw, 471px)) / 2 + 18px));
+    z-index: 2003;
+  }
+  .persistent-page-back--routine-adjust { top: calc(57px + env(safe-area-inset-top, 0px)); }
+  .persistent-app-menu-button {
+    top: calc(57px + env(safe-area-inset-top, 0px));
+    right: max(18px, calc((100vw - min(100vw, 471px)) / 2 + 18px));
+    z-index: 2003;
+  }
+  .persistent-mobile-page-title {
+    top: calc(61px + env(safe-area-inset-top, 0px));
+    left: 50%;
+    z-index: 2002;
+    display: block;
+    width: min(calc(100vw - 132px), 339px);
+    margin: 0;
+    transform: translateX(-50%);
+    font-size: clamp(18px, 5.2vw, 23px);
+    line-height: 36px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .next-me-app-shell.has-mobile-chrome::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 50%;
+    z-index: 1999;
+    width: min(100vw, 471px);
+    height: calc(108px + env(safe-area-inset-top, 0px));
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, rgba(255,239,239,.98), rgba(255,239,239,.94));
+    border-bottom: 1px solid rgba(255,154,154,.2);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+  }
+
+  /* 각 페이지 안에 있던 중복 제목·뒤로가기·메뉴는 모바일에서 숨깁니다. */
+  .figma-feature-header,
+  .simple-page-header,
+  .profile-overview-title,
+  .routine-back,
+  .routine-menu-button,
+  .analysis-back,
+  .analysis-inner > h1,
+  .ai-routine-page > .page-back,
+  .ai-routine-page > .center-page-title,
+  .upload-page > .page-back,
+  .upload-page > .exit-link,
+  .upload-page > h1,
+  .today-routine-page > h1,
+  .chat-exit,
+  .chat-menu,
+  .chat-page > h1,
+  .consult-header,
+  .consult-start-page > h1,
+  .game-header,
+  .game-page > h1 {
+    display: none;
+  }
+
+  .step-header {
+    position: fixed;
+    top: calc(88px + env(safe-area-inset-top, 0px));
+    z-index: 2001;
+  }
+  .step-header h1 { display: none; }
 
   /* 노치/홈 인디케이터가 하단 CTA를 가리지 않도록 여유를 둡니다. */
   .figma-bottom-button,
@@ -3267,4 +3348,34 @@ button:disabled { cursor: not-allowed; }
   .figma-character-list { padding-right: 22px; padding-left: 22px; }
   .figma-character-list .pet-catalog-card { grid-template-columns: 118px minmax(0,1fr); padding: 18px; }
   .figma-character-list .pet-catalog-card img { width: 108px; height: 130px; }
+}
+
+/* 모바일 고정 헤더 아래에서 실제 콘텐츠 높이만큼 자연스럽게 스크롤합니다. */
+@media (max-width: 600px) {
+  .user-care-page .user-care-state {
+    margin: calc(130px + env(safe-area-inset-top, 0px)) 30px 0;
+  }
+  .user-care-guide-content {
+    padding-top: calc(130px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+  }
+  .profile-edit-form.profile-overview-content {
+    padding-top: calc(125px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+  }
+  .home-dashboard-content,
+  .profile-overview-content,
+  .personal-recommendation-content,
+  .figma-history-content,
+  .figma-character-list,
+  .character-collection-content,
+  .chart-select-groups,
+  .chart-hub-list,
+  .routine-settings-content,
+  .routine-create-content,
+  .routine-complete-content,
+  .routine-adjust-content,
+  .routine-history-content {
+    padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+  }
 }
