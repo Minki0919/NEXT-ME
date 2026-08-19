@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import PinkPage from "../components/PinkPage";
 import { getTodayRoutine, setRoutineItemCompleted } from "../api/routines";
 import type { RoutineItem, RoutinePlan } from "../api/types";
-import routineProgressRing from "../assets/figma/routine-progress-ring.svg";
 
 export default function RoutineCompletePage() {
   const [routine, setRoutine] = useState<RoutinePlan | null>(null);
@@ -67,7 +66,6 @@ export default function RoutineCompletePage() {
             className="routine-complete-ring"
             style={{
               "--routine-progress": `${progress * 3.6}deg`,
-              "--routine-ring-mask": `url(${routineProgressRing})`,
             } as React.CSSProperties}
             role="progressbar"
             aria-label="오늘의 루틴 진행도"

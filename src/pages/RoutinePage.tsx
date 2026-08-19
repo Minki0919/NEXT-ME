@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PinkPage from "../components/PinkPage";
 import { openAppMenu } from "../components/AppMenu";
@@ -18,14 +17,8 @@ import type {
 } from "../api/types";
 import { getPetVisual } from "../data/pets";
 
-const ROUTINE_GUIDE_EXPANDED_TOP = 36;
-const ROUTINE_GUIDE_COLLAPSED_TOP = 60;
-
 export default function RoutinePage() {
   const navigate = useNavigate();
-  const guideDragStartY = useRef(0);
-  const guideDragStartTop = useRef(ROUTINE_GUIDE_COLLAPSED_TOP);
-  const guideMoved = useRef(false);
   const [routine, setRoutine] = useState<RoutinePlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingItemId, setLoadingItemId] = useState<number | null>(null);
@@ -33,8 +26,6 @@ export default function RoutinePage() {
   const [notice, setNotice] = useState("");
   const [petReward, setPetReward] = useState<CharacterReward | null>(null);
   const [refreshingPets, setRefreshingPets] = useState(false);
-  const [guideTop, setGuideTop] = useState(ROUTINE_GUIDE_COLLAPSED_TOP);
-  const [guideDragging, setGuideDragging] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -151,60 +142,6 @@ export default function RoutinePage() {
     void toggle(item.id, item.completed);
   }
 
-  function clampGuideTop(value: number) {
-    return Math.min(
-      ROUTINE_GUIDE_COLLAPSED_TOP,
-      Math.max(ROUTINE_GUIDE_EXPANDED_TOP, value)
-    );
-  }
-
-  function startGuideDrag(event: ReactPointerEvent<HTMLButtonElement>) {
-    event.currentTarget.setPointerCapture(event.pointerId);
-    guideDragStartY.current = event.clientY;
-    guideDragStartTop.current = guideTop;
-    guideMoved.current = false;
-    setGuideDragging(true);
-  }
-
-  function moveGuide(event: ReactPointerEvent<HTMLButtonElement>) {
-    if (!guideDragging) return;
-
-    const page = event.currentTarget.closest(".today-routine-page");
-    const pageHeight = page?.getBoundingClientRect().height ?? 0;
-    if (!pageHeight) return;
-
-    const delta = ((event.clientY - guideDragStartY.current) / pageHeight) * 100;
-    if (Math.abs(delta) > 1) guideMoved.current = true;
-    setGuideTop(clampGuideTop(guideDragStartTop.current + delta));
-  }
-
-  function endGuideDrag(event: ReactPointerEvent<HTMLButtonElement>) {
-    if (!guideDragging) return;
-
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-    setGuideDragging(false);
-
-    const middle = (ROUTINE_GUIDE_EXPANDED_TOP + ROUTINE_GUIDE_COLLAPSED_TOP) / 2;
-    setGuideTop((current) =>
-      current <= middle ? ROUTINE_GUIDE_EXPANDED_TOP : ROUTINE_GUIDE_COLLAPSED_TOP
-    );
-  }
-
-  function toggleGuide() {
-    if (guideMoved.current) {
-      guideMoved.current = false;
-      return;
-    }
-
-    setGuideTop((current) =>
-      current === ROUTINE_GUIDE_EXPANDED_TOP
-        ? ROUTINE_GUIDE_COLLAPSED_TOP
-        : ROUTINE_GUIDE_EXPANDED_TOP
-    );
-  }
-
   const progress = routine?.completionPercentage ?? 0;
   const routineItems = routine?.items ?? [];
   const rewardedPet = petReward?.characterNumber !== null && petReward?.characterNumber !== undefined
@@ -212,7 +149,7 @@ export default function RoutinePage() {
     : null;
 
   return (
-    <PinkPage className="today-routine-page">
+    <PinkPage className="today-routine-page" scroll>
       <button className="routine-back" onClick={() => navigate("/ai-routine")}>
         <img src={assets.routineBack} alt="뒤로가기" />
       </button>
@@ -273,27 +210,7 @@ export default function RoutinePage() {
         {!loading && routineItems.length === 0 && <p>루틴 만들기를 눌러 오늘 계획을 생성해 주세요.</p>}
       </section>
 
-      <section
-        className={`tomorrow-card ${guideDragging ? "dragging" : ""}`}
-        style={{ top: `${guideTop}%` }}
-      >
-        <button
-          type="button"
-          className="routine-guide-grabber"
-          aria-label={
-            guideTop === ROUTINE_GUIDE_EXPANDED_TOP
-              ? "오늘의 루틴 안내 접기"
-              : "오늘의 루틴 안내 펼치기"
-          }
-          aria-expanded={guideTop === ROUTINE_GUIDE_EXPANDED_TOP}
-          onClick={toggleGuide}
-          onPointerDown={startGuideDrag}
-          onPointerMove={moveGuide}
-          onPointerUp={endGuideDrag}
-          onPointerCancel={endGuideDrag}
-        >
-          <span />
-        </button>
+      <section className="tomorrow-card">
         <div className="routine-guide-content">
           <h3>내일 아침에 할 일</h3>
           <img src={assets.routineCardLine} alt="" />
