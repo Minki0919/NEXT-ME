@@ -11203,3 +11203,291 @@ input:focus {
   display:
     none !important;
 }
+/* =========================================================
+   2026-08-21
+   스킨 타입 / 퍼스널 컬러 드롭다운
+   질문 글자 + 선택된 글자 겹침 완전 수정
+   ========================================================= */
+
+.detail-survey-page .survey-dropdown-question {
+  position: relative !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+
+  /*
+    기존에는 질문과 선택값을
+    top 값으로 강제 배치해서
+    질문이 2줄이 되면 서로 겹쳤음.
+
+    이제 실제 글자 높이에 맞춰
+    영역이 자동으로 늘어남.
+  */
+  min-height: 118px !important;
+  height: auto !important;
+
+  margin: 0 0 15px !important;
+
+  padding:
+    16px 42px
+    25px 0 !important;
+
+  overflow: visible !important;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   질문 제목
+   ========================================================= */
+
+.detail-survey-page .survey-dropdown-title {
+  /*
+    absolute 제거
+    질문이 2줄, 3줄이 되어도
+    아래 선택값을 자동으로 밀어냄
+  */
+  position: static !important;
+
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  display: block !important;
+
+  width: 100% !important;
+
+  min-width: 0;
+
+  margin: 0 !important;
+
+  color: var(--mid-gray);
+
+  font-size: 20px !important;
+  font-weight: 600;
+
+  line-height: 1.35 !important;
+
+  /*
+    긴 퍼스널 컬러 질문이
+    자연스럽게 다음 줄로 내려감
+  */
+  white-space: normal !important;
+
+  word-break: keep-all !important;
+  overflow-wrap: break-word;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   선택된 값
+   ========================================================= */
+
+.detail-survey-page .survey-dropdown-value {
+  /*
+    기존 top:53px 제거
+    질문 바로 다음에 배치
+  */
+  position: static !important;
+
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  display: block !important;
+
+  width: 100% !important;
+
+  min-width: 0;
+  min-height: 24px;
+
+  margin:
+    9px 0 0 !important;
+
+  color: var(--pink-strong);
+
+  font-size: 18px !important;
+  font-weight: 700;
+
+  line-height: 1.3 !important;
+
+  overflow: hidden;
+
+  white-space: nowrap !important;
+
+  text-overflow: ellipsis;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   하단 선
+   ========================================================= */
+
+.detail-survey-page .survey-dropdown-line {
+  position: absolute !important;
+
+  right: 0 !important;
+  bottom: 7px !important;
+  left: 0 !important;
+
+  width: 100%;
+
+  height: 1px;
+
+  background: #9b9b9b;
+
+  pointer-events: none;
+}
+
+
+.detail-survey-page
+.survey-dropdown-question.answered
+.survey-dropdown-line {
+  background:
+    rgba(
+      255,
+      118,
+      128,
+      0.72
+    );
+}
+
+
+/* =========================================================
+   오른쪽 화살표
+   ========================================================= */
+
+.detail-survey-page .survey-dropdown-chevron {
+  position: absolute !important;
+
+  top: auto !important;
+  right: 4px !important;
+  bottom: 20px !important;
+  left: auto !important;
+
+  width: 21px !important;
+  height: 21px !important;
+
+  object-fit: contain;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   실제 native select
+
+   화면에는 보이지 않지만
+   전체 영역을 눌렀을 때 선택창이 열림
+   ========================================================= */
+
+.detail-survey-page .survey-dropdown-native {
+  position: absolute !important;
+
+  inset: 0 !important;
+
+  z-index: 2;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  margin: 0;
+
+  border: 0;
+
+  opacity: 0;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   짧은 모바일 화면
+   ========================================================= */
+
+@media (max-height: 780px) {
+
+  .detail-survey-page .survey-dropdown-question {
+    /*
+      기존 CSS의 min-height:102px,
+      title top:16px,
+      value top:47px 규칙을
+      여기서 완전히 덮어씀
+    */
+    min-height: 108px !important;
+
+    padding:
+      14px 42px
+      23px 0 !important;
+  }
+
+
+  .detail-survey-page .survey-dropdown-title {
+    position: static !important;
+
+    top: auto !important;
+
+    font-size: 18px !important;
+
+    line-height: 1.35 !important;
+  }
+
+
+  .detail-survey-page .survey-dropdown-value {
+    position: static !important;
+
+    top: auto !important;
+
+    margin-top: 8px !important;
+
+    font-size: 17px !important;
+
+    line-height: 1.3 !important;
+  }
+
+
+  .detail-survey-page .survey-dropdown-chevron {
+    bottom: 18px !important;
+  }
+
+}
+
+
+/* =========================================================
+   좁은 iPhone
+   ========================================================= */
+
+@media (max-width: 390px) {
+
+  .detail-survey-page .survey-dropdown-question {
+    padding-right: 36px !important;
+  }
+
+
+  .detail-survey-page .survey-dropdown-title {
+    font-size: 18px !important;
+  }
+
+
+  .detail-survey-page .survey-dropdown-value {
+    font-size: 17px !important;
+  }
+
+
+  .detail-survey-page .survey-dropdown-chevron {
+    right: 2px !important;
+
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+}
