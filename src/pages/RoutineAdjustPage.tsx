@@ -63,55 +63,193 @@ export default function RoutineAdjustPage() {
   }, []);
 
   const hasRoutine = routine?.routineGenerated === true;
-  const affectedLabel = useMemo(
-    () => changes.length > 0
+ const affectedLabel = useMemo(
+  () =>
+    changes.length > 0
       ? `${changes.length}개 루틴의 일정이 변경됐어요.`
       : adjustmentAttempted
-        ? "백엔드 응답에서 실제로 변경된 루틴 시간을 확인하지 못했어요."
+        ? "요청을 반영했어요. 최신 루틴을 확인해 주세요."
         : "변경 결과를 여기에 안내해 드려요.",
-    [adjustmentAttempted, changes.length]
-  );
+  [adjustmentAttempted, changes.length]
+);
 
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    const request = message.trim();
-    if (!request || submitting || !routine) return;
+async function submit(event: FormEvent) {
+  event.preventDefault();
 
-    const before = routine;
-    setMessages((current) => [...current, { role: "USER", content: request }]);
-    setMessage("");
-    setSubmitting(true);
-    setAdjustmentAttempted(false);
-    setError("");
-    try {
-      const adjusted = await adjustTodayRoutine(request);
-      // 조정 응답 직후 서버의 최종 저장본을 다시 조회합니다. 일부 백엔드 구현은
-      // 조정 응답보다 조회 응답에서 재계산된 시간 범위를 완전하게 반환합니다.
-      const refreshed = await getTodayRoutine().catch(() => adjusted);
-      const adjustedChanges = findChanges(before.items, adjusted.items);
-      const refreshedChanges = findChanges(before.items, refreshed.items);
-      // 저장 직후 조회가 잠시 이전 값을 반환하는 환경도 있으므로 더 완전한 결과를 사용합니다.
-      const useRefreshed = refreshedChanges.length >= adjustedChanges.length;
-      const updated = useRefreshed ? refreshed : adjusted;
-      const changedItems = useRefreshed ? refreshedChanges : adjustedChanges;
-      setRoutine(updated);
-      setChanges(changedItems);
-      setAdjustmentAttempted(true);
-      setMessages((current) => [
-        ...current,
-        {
-          role: "ASSISTANT",
-          content: changedItems.length > 0
-            ? (updated.coachMessage || "일정에 맞춰 해당 루틴을 바로 변경했어요.")
-            : "요청은 처리됐지만 서버 응답에서 달라진 루틴 시간을 확인하지 못했어요. 변경할 루틴명과 시간을 함께 입력해 주세요. 예: ‘저녁 세안을 오후 9시로 변경해줘’.",
-        },
-      ]);
-    } catch (value) {
-      setError(value instanceof Error ? value.message : "루틴 변경 요청을 처리하지 못했습니다.");
-    } finally {
-      setSubmitting(false);
-    }
+  const request = message.trim();
+
+  if (!request || submitting || !routine) {
+    return;
   }
+
+  /*
+   * 변경 전 루틴 저장
+   * 나중에 실제 어떤 항목이 변경됐는지 비교할 때 사용
+   */
+  const before = routine;
+
+  setMessages((current) => [
+    ...current,
+    {
+      role: "USER",
+      content: request,
+    },
+  ]);
+
+  setMessage("");
+  setSubmitting(true);
+  setAdjustmentAttempted(false);
+  setError("");
+
+  try {
+    /*
+     * =====================================================
+     * 1. 사용자가 입력한 문장을 그대로 백엔드로 전달
+     *
+     * 예:
+     * "오늘 9시에 퇴근해"
+     * "오늘은 11시에 잘 거야"
+     * "오늘 야근해"
+     *
+     * 프론트에서 문장을 변경하거나
+     * 루틴명을 강제로 붙이지 않습니다.
+     * =====================================================
+     */
+    const adjusted = await adjustTodayRoutine(request);
+
+    /*
+     * POST 응답에 들어있는 변경 결과를 먼저 확인합니다.
+     */
+    let updated = adjusted;
+
+    let changedItems = findChanges(
+      before.items,
+      adjusted.items
+    );
+
+    /*
+     * =====================================================
+     * 2. 서버 저장 직후 GET이 이전 데이터를 반환할 수 있으므로
+     *    변경을 못 찾았을 때만 잠깐 기다렸다가 재확인
+     *
+     * 백엔드를 다시 호출해서 AI에게 재질문하는 것이 아닙니다.
+     * 단순히 저장된 오늘의 루틴을 다시 조회하는 것입니다.
+     * =====================================================
+     */
+    if (changedItems.length === 0) {
+      const retryDelays = [250, 500, 800];
+
+      for (const delay of retryDelays) {
+        await wait(delay);
+
+        try {
+          const latest = await getTodayRoutine();
+
+          const latestChanges = findChanges(
+            before.items,
+            latest.items
+          );
+
+          /*
+           * 최신 서버 상태는 보관
+           */
+          updated = latest;
+
+          /*
+           * 변경점이 발견되면 더 이상 조회할 필요 없음
+           */
+          if (latestChanges.length > 0) {
+            changedItems = latestChanges;
+            break;
+          }
+        } catch {
+          /*
+           * 조회 재시도 실패는 adjust 요청 자체의
+           * 실패로 처리하지 않습니다.
+           */
+        }
+      }
+    } else {
+      /*
+       * POST 응답에서 이미 변경을 확인한 경우에는
+       * 저장된 최신 상태를 한 번만 확인합니다.
+       *
+       * 여기서 GET 응답이 오래된 데이터라면
+       * POST의 정상 결과를 절대 덮어쓰지 않습니다.
+       */
+      await wait(250);
+
+      try {
+        const latest = await getTodayRoutine();
+
+        const latestChanges = findChanges(
+          before.items,
+          latest.items
+        );
+
+        /*
+         * GET 결과가 POST 결과와 같거나
+         * 더 많은 변경을 가지고 있을 때만 사용
+         */
+        if (
+          latestChanges.length >=
+          changedItems.length
+        ) {
+          updated = latest;
+          changedItems = latestChanges;
+        }
+      } catch {
+        /*
+         * 최신 조회 실패 시
+         * POST 응답 그대로 사용
+         */
+      }
+    }
+
+    setRoutine(updated);
+    setChanges(changedItems);
+    setAdjustmentAttempted(true);
+
+    /*
+     * =====================================================
+     * 3. 가장 중요한 부분
+     *
+     * changedItems가 0이라고 해서
+     * 백엔드의 정상 coachMessage를 버리지 않습니다.
+     *
+     * 기존 코드가 이 부분에서 정상 백엔드 응답을
+     * "루틴명과 시간을 입력하세요"로 덮어쓰고 있었습니다.
+     * =====================================================
+     */
+
+    const backendMessage =
+      adjusted.coachMessage?.trim() ||
+      updated.coachMessage?.trim();
+
+    setMessages((current) => [
+      ...current,
+      {
+        role: "ASSISTANT",
+
+        content:
+          backendMessage ||
+          (
+            changedItems.length > 0
+              ? `${changedItems.length}개 루틴의 일정을 변경했어요.`
+              : "요청을 반영했어요. 변경된 오늘의 루틴을 확인해 주세요."
+          ),
+      },
+    ]);
+  } catch (value) {
+    setError(
+      value instanceof Error
+        ? value.message
+        : "루틴 변경 요청을 처리하지 못했습니다."
+    );
+  } finally {
+    setSubmitting(false);
+  }
+}
 
   return (
     <PinkPage className="figma-feature-page routine-adjust-page" scroll>
@@ -282,4 +420,9 @@ function getTimeKey(value: string) {
 function formatCompactTime(value: string) {
   const match = /(?:T|^)(\d{2}):(\d{2})/.exec(value);
   return match ? `${match[1]}:${match[2]}` : value;
+}
+function wait(ms: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
 }

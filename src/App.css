@@ -10239,3 +10239,354 @@ input[type="time"]
     border-radius: 26px;
   }
 }
+/* =========================================================
+   2026-08-20 모바일 오류 최종 수정
+   - 회원가입 버튼 왼쪽 잘림
+   - 인증 안내 겹침
+   - Safari 하단 바 겹침
+   - 루틴 수정 상단 여백
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  /* =======================================================
+     회원가입 페이지
+     ======================================================= */
+
+  .signup-page {
+    height: auto !important;
+    min-height: 100dvh !important;
+
+    overflow: visible !important;
+    overflow-x: hidden !important;
+
+    padding-bottom:
+      calc(
+        40px +
+        env(safe-area-inset-bottom, 0px)
+      ) !important;
+  }
+
+
+  /*
+    기존에는 폼 자체에 하단 버튼을 피하기 위한
+    큰 padding-bottom이 있었지만,
+    가입 버튼을 문서 흐름으로 변경하므로 줄입니다.
+  */
+  .signup-form {
+    padding:
+      0 42px 24px !important;
+  }
+
+
+  /*
+    ★ 핵심 수정
+
+    기존:
+      position: fixed
+      left: 50%
+      transform: translateX(-50%)
+
+    여기에 모바일 .figma-bottom-button의 left가 덮어써져
+    버튼이 화면 왼쪽 밖으로 이동했습니다.
+
+    회원가입에서는 fixed를 완전히 제거합니다.
+  */
+  .signup-submit,
+  .figma-bottom-button.signup-submit {
+    position: relative !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    display: block !important;
+
+    width:
+      calc(100% - 84px) !important;
+
+    max-width: 365px !important;
+
+    height: 56px !important;
+
+    margin:
+      18px auto
+      calc(
+        34px +
+        env(safe-area-inset-bottom, 0px)
+      ) !important;
+
+    padding: 0 18px !important;
+
+    transform: none !important;
+
+    border: 0 !important;
+    border-radius: 999px !important;
+
+    background:
+      var(--pink-button);
+
+    color: #fff;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    text-align: center;
+
+    box-shadow:
+      3px 7px 24px -10px
+      rgba(160, 30, 30, 0.32);
+
+    z-index: 1 !important;
+  }
+
+
+  .signup-submit:disabled,
+  .figma-bottom-button.signup-submit:disabled {
+    background: #cfcfcf !important;
+
+    color: #fff !important;
+
+    box-shadow: none !important;
+
+    opacity: 1 !important;
+  }
+
+
+  /*
+    "입력 필요 / 이메일 인증 완료" 알림도
+    fixed를 제거해서 비밀번호 입력창을 가리지 않게 합니다.
+  */
+  .signup-missing-notice {
+    position: relative !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    width:
+      calc(100% - 84px) !important;
+
+    max-width: 365px !important;
+
+    max-height: none !important;
+
+    margin:
+      8px auto 0 !important;
+
+    padding:
+      10px 14px !important;
+
+    overflow: visible !important;
+
+    transform: none !important;
+
+    z-index: 1 !important;
+  }
+
+
+  /*
+    API 성공/오류 메시지도 폼 흐름 안에서 표시
+  */
+  .signup-form > .api-status {
+    position: relative !important;
+
+    width: 100% !important;
+
+    margin:
+      4px 0 0 !important;
+
+    padding:
+      12px 14px !important;
+  }
+
+
+  .verification-block {
+    display: grid !important;
+
+    gap: 20px !important;
+
+    width: 100% !important;
+  }
+
+
+  .verification-block .verify-button,
+  .signup-form > .verify-button {
+    position: relative !important;
+
+    width: 100% !important;
+    height: 54px !important;
+
+    margin: 0 !important;
+
+    border-radius: 999px !important;
+  }
+
+
+  /*
+    인증번호 입력이 나타날 때 아래 요소와 충분한 간격 확보
+  */
+  .verification-block .line-field {
+    margin-bottom: 4px;
+  }
+
+
+  /*
+    iOS Safari 입력 필드 확대 및 삐져나옴 방지
+  */
+  .signup-page input {
+    min-width: 0 !important;
+
+    max-width: 100% !important;
+
+    font-size: 16px !important;
+  }
+
+
+  .signup-page .line-field {
+    min-width: 0;
+  }
+
+
+  /* =======================================================
+     공통 하단 버튼
+     
+     signup-submit은 위에서 별도로 처리했으므로 제외
+     ======================================================= */
+
+  .figma-bottom-button:not(.signup-submit) {
+    left:
+      max(
+        16px,
+        calc(
+          (100% - 84%) / 2
+        )
+      );
+
+    width:
+      min(
+        84%,
+        calc(100% - 32px)
+      );
+  }
+
+
+  /* =======================================================
+     루틴 수정 화면
+     고정 헤더와 콘텐츠가 붙지 않도록 함
+     ======================================================= */
+
+  .routine-adjust-page {
+    min-height: 100dvh !important;
+
+    overflow: visible !important;
+  }
+
+
+  .routine-adjust-content {
+    padding-top:
+      calc(
+        var(--nextme-header-height) +
+        44px +
+        env(safe-area-inset-top, 0px)
+      ) !important;
+
+    padding-right: 40px !important;
+
+    padding-bottom:
+      calc(
+        110px +
+        env(safe-area-inset-bottom, 0px)
+      ) !important;
+
+    padding-left: 40px !important;
+  }
+
+
+  .routine-adjust-content > h2 {
+    margin:
+      0 0 34px 15px !important;
+
+    font-size: 22px !important;
+    line-height: 1.25 !important;
+  }
+
+
+  .routine-adjust-chat {
+    min-height: 280px !important;
+
+    max-height: none !important;
+
+    overflow: visible !important;
+  }
+
+
+  .routine-adjust-message p {
+    max-width: 82% !important;
+
+    overflow-wrap: anywhere;
+
+    word-break: keep-all;
+  }
+
+
+  .routine-adjust-input {
+    margin:
+      32px 0 16px !important;
+  }
+
+
+  .routine-adjust-input > div {
+    grid-template-columns:
+      minmax(0, 1fr) 72px !important;
+
+    width: 100%;
+
+    min-width: 0;
+  }
+
+
+  .routine-adjust-input textarea {
+    width: 100% !important;
+
+    min-width: 0 !important;
+
+    font-size: 16px !important;
+  }
+}
+
+
+/* 작은 아이폰 */
+@media (max-width: 390px) {
+
+  .signup-form {
+    padding-right: 30px !important;
+    padding-left: 30px !important;
+  }
+
+
+  .signup-submit,
+  .figma-bottom-button.signup-submit,
+  .signup-missing-notice {
+    width:
+      calc(100% - 60px) !important;
+  }
+
+
+  .routine-adjust-content {
+    padding-right: 27px !important;
+    padding-left: 27px !important;
+  }
+
+
+  .routine-adjust-message p {
+    max-width: 84% !important;
+
+    padding:
+      12px 17px !important;
+
+    font-size: 16px !important;
+  }
+}
