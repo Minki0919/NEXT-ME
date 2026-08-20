@@ -4,7 +4,6 @@ import PinkPage from "../components/PinkPage";
 import { assets } from "../assets";
 import { getMyCharacterCollection } from "../api/characters";
 import type { CharacterCollection } from "../api/types";
-import { openAppMenu } from "../components/AppMenu";
 
 export default function GamePage() {
   const navigate = useNavigate();
@@ -24,12 +23,12 @@ export default function GamePage() {
 
   return (
     <PinkPage className="game-page">
-      <header className="game-header">
-        <img src={assets.gameLogo} alt="Next : Me" />
-        <button className="game-menu-action" type="button" onClick={openAppMenu} aria-label="전체 메뉴 열기">
-          <img src={assets.gameMenu} alt="" />
-        </button>
-      </header>
+ <header className="game-header">
+  <img
+    src={assets.gameLogo}
+    alt="Next : Me"
+  />
+</header>
 
       <h1>
         🎉 Next : Me 월드에 오신 것을

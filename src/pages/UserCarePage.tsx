@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import PinkPage from "../components/PinkPage";
 import { assets } from "../assets";
 import { ApiError } from "../api/http";
-import { openAppMenu } from "../components/AppMenu";
 import {
   generateMyUserCareRecommendation,
   getLatestMyUserCareRecommendation,
@@ -77,12 +76,11 @@ export default function UserCarePage() {
 
   return (
     <PinkPage className="figma-feature-page user-care-page" scroll>
-      <header className="figma-feature-header user-care-feature-header">
-        <h1>피부 관리 가이드</h1>
-        <button type="button" aria-label="전체 메뉴 열기" onClick={openAppMenu}>
-          <img src={assets.routineMenu} alt="" />
-        </button>
-      </header>
+<header className="figma-feature-header user-care-feature-header">
+  <h1>
+    피부 관리 가이드
+  </h1>
+</header>
 
       {initialLoading && (
         <section className="user-care-state" aria-live="polite">

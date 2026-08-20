@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import PinkPage from "../components/PinkPage";
-import { openAppMenu } from "../components/AppMenu";
 import { assets } from "../assets";
 import { ApiError } from "../api/http";
 import {
@@ -404,13 +403,24 @@ export function RecommendationHistoryPage() {
   );
 }
 
-function RecommendationHeader({ title, chat = false }: { title: string; chat?: boolean }) {
+function RecommendationHeader({
+  title,
+  chat = false,
+}: {
+  title: string;
+  chat?: boolean;
+}) {
   return (
-    <header className={`figma-feature-header ${chat ? "recommendation-chat-header" : ""}`}>
-      <h1>{title}</h1>
-      <button type="button" aria-label="전체 메뉴 열기" onClick={openAppMenu}>
-        <img src={assets.routineMenu} alt="" />
-      </button>
+    <header
+      className={`figma-feature-header ${
+        chat
+          ? "recommendation-chat-header"
+          : ""
+      }`}
+    >
+      <h1>
+        {title}
+      </h1>
     </header>
   );
 }

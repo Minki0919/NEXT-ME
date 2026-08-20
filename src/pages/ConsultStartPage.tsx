@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import PinkPage from "../components/PinkPage";
 import { assets } from "../assets";
-import { openAppMenu } from "../components/AppMenu";
 import { getAuthSession, getStoredProfile } from "../utils/storage";
 
 export default function ConsultStartPage() {
@@ -11,19 +10,19 @@ export default function ConsultStartPage() {
 
   return (
     <PinkPage className="consult-start-page">
-      <header className="consult-header">
-        <button className="logo-button" onClick={() => navigate("/game")}>
-          <img src={assets.consultLogo} alt="Next : Me" />
-        </button>
-        <button
-          type="button"
-          className="consult-menu-button"
-          aria-label="전체 메뉴 열기"
-          onClick={openAppMenu}
-        >
-          <img src={assets.consultMenu} alt="" />
-        </button>
-      </header>
+<header className="consult-header">
+  <button
+    className="logo-button"
+    onClick={() =>
+      navigate("/game")
+    }
+  >
+    <img
+      src={assets.consultLogo}
+      alt="Next : Me"
+    />
+  </button>
+</header>
 
       <h1>
         <strong>{nickname}</strong>님,

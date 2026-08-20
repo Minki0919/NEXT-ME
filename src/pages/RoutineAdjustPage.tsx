@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import PinkPage from "../components/PinkPage";
-import { openAppMenu } from "../components/AppMenu";
 import { assets } from "../assets";
 import { adjustTodayRoutine, getTodayRoutine } from "../api/routines";
 import type { RoutineItem, RoutinePlan } from "../api/types";
@@ -253,12 +252,11 @@ async function submit(event: FormEvent) {
 
   return (
     <PinkPage className="figma-feature-page routine-adjust-page" scroll>
-      <header className="figma-feature-header routine-adjust-header">
-        <h1>루틴 수정하기</h1>
-        <button type="button" aria-label="전체 메뉴 열기" onClick={openAppMenu}>
-          <img src={assets.routineMenu} alt="" />
-        </button>
-      </header>
+<header className="figma-feature-header routine-adjust-header">
+  <h1>
+    루틴 수정하기
+  </h1>
+</header>
 
       <main className="routine-adjust-content">
         <h2>AI 맞춤 상담</h2>

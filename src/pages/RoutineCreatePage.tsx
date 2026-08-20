@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PinkPage from "../components/PinkPage";
-import { openAppMenu } from "../components/AppMenu";
 import { assets } from "../assets";
 import routineCalendarIcon from "../assets/figma/routine-calendar.svg";
 import routineNotebookIcon from "../assets/figma/routine-notebook.svg";
@@ -49,12 +48,11 @@ export default function RoutineCreatePage() {
 
   return (
     <PinkPage className="figma-feature-page routine-create-page" scroll>
-      <header className="figma-feature-header">
-        <h1>루틴 만들기</h1>
-        <button type="button" aria-label="전체 메뉴 열기" onClick={openAppMenu}>
-          <img src={assets.routineMenu} alt="" />
-        </button>
-      </header>
+ <header className="figma-feature-header">
+  <h1>
+    루틴 만들기
+  </h1>
+</header>
 
       <main className="routine-create-content">
         <div className="routine-create-hero" aria-hidden="true">

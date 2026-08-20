@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PinkPage from "../components/PinkPage";
-import { openAppMenu } from "../components/AppMenu";
 import { assets } from "../assets";
 import { ApiError } from "../api/http";
 import { getMyCharacterCollection } from "../api/characters";
@@ -150,18 +149,6 @@ export default function RoutinePage() {
 
   return (
     <PinkPage className="today-routine-page" scroll>
-      <button className="routine-back" onClick={() => navigate("/ai-routine")}>
-        <img src={assets.routineBack} alt="뒤로가기" />
-      </button>
-      <button
-        type="button"
-        className="routine-menu-button"
-        aria-label="전체 메뉴 열기"
-        onClick={openAppMenu}
-      >
-        <img className="routine-menu-icon" src={assets.routineMenu} alt="" />
-      </button>
-
       <h1>오늘의 루틴</h1>
 
       <section className="routine-progress-section">

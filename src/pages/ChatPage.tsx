@@ -3,7 +3,6 @@ import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import PinkPage from "../components/PinkPage";
 import { assets } from "../assets";
-import { openAppMenu } from "../components/AppMenu";
 import { sendAiMessage } from "../api/chat";
 import { getAuthSession, getStoredProfile } from "../utils/storage";
 
@@ -72,15 +71,6 @@ export default function ChatPage() {
       </button>
 
       <h1>AI 맞춤 상담</h1>
-      <button
-        type="button"
-        className="chat-menu"
-        aria-label="전체 메뉴 열기"
-        onClick={openAppMenu}
-      >
-        <img src={assets.chatMenu} alt="" />
-      </button>
-
       <div
         ref={messageListRef}
         className="chat-message-list"

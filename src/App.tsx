@@ -494,22 +494,24 @@ export default function App() {
         </h1>
       )}
 
-      {/* 메뉴 버튼 */}
-      {showPersistentMenu && (
-        <button
-          type="button"
-          className="persistent-app-menu-button"
-          aria-label="전체 메뉴 열기"
-          onClick={openAppMenu}
-        >
-          <img
-            src={
-              assets.routineMenu
-            }
-            alt=""
-          />
-        </button>
-      )}
+      {/* 
+  앱 전체에서 사용하는 유일한 메뉴 버튼
+  각 페이지 내부에서는 별도의 메뉴 버튼을 만들지 않습니다.
+*/}
+{showPersistentMenu && (
+  <button
+    type="button"
+    className="persistent-app-menu-button"
+    data-app-menu-trigger="global"
+    aria-label="전체 메뉴 열기"
+    onClick={openAppMenu}
+  >
+    <img
+      src={assets.routineMenu}
+      alt=""
+    />
+  </button>
+)}
 
       {loggedIn && <AppMenu />}
 
