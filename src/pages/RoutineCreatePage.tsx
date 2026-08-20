@@ -94,6 +94,13 @@ export default function RoutineCreatePage() {
         )}
 
         {error && <p className="api-status error">{error}</p>}
+        <button
+  type="button"
+  className="routine-create-home-button"
+  onClick={() => navigate("/home")}
+>
+  홈으로 가기
+</button>
       </main>
     </PinkPage>
   );

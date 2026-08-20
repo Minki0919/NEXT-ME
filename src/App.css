@@ -11491,3 +11491,64 @@ input:focus {
   }
 
 }
+/* =========================================================
+   루틴 만들기 - 홈으로 가기 버튼
+   ========================================================= */
+
+.routine-create-home-button {
+  display: block;
+
+  width: 100%;
+  min-height: 56px;
+
+  margin-top: 32px;
+  margin-bottom:
+    calc(
+      24px +
+      env(safe-area-inset-bottom, 0px)
+    );
+
+  padding: 0 20px;
+
+  border: 1px solid
+    rgba(255, 118, 128, 0.55);
+
+  border-radius: 999px;
+
+  background: #fff;
+
+  color: var(--pink-strong);
+
+  font-size: 18px;
+  font-weight: 800;
+
+  text-align: center;
+
+  box-shadow:
+    2px 5px 14px
+    rgba(162, 70, 70, 0.08);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.routine-create-home-button:active {
+  transform: scale(0.98);
+
+  background: #fff2f3;
+}
+
+@media (max-width: 600px) {
+  .routine-create-home-button {
+    margin-top: 28px;
+
+    margin-bottom:
+      calc(
+        30px +
+        env(safe-area-inset-bottom, 0px)
+      );
+  }
+}
